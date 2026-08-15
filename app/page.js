@@ -141,28 +141,46 @@ function skylineShapes(keyPrefix) {
   });
 }
 
-// Grid of tiny window rects, clipped down to just the building shapes
-// above so only windows "inside" a building are ever visible.
+// A window grid generated per-building, sized to that building's own
+// width/height, so every building gets even columns and rows instead of
+// relying on a generic overlay grid that may barely clip into it.
 function skylineWindows() {
-  const cols = 28;
-  const rows = 14;
-  const colSpacing = 1440 / cols;
-  const rowSpacing = 220 / rows;
+  const marginX = 6;
+  const marginTop = 10;
+  const marginBottom = 8;
+  const colGap = 13;
+  const rowGap = 18;
+  const winW = 3;
+  const winH = 5;
+
   const windows = [];
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
-      if ((col * 2 + row * 3) % 5 === 0) continue; // a few dark windows, not every cell lit
-      windows.push(
-        <rect
-          key={`w-${row}-${col}`}
-          x={col * colSpacing + 6}
-          y={12 + row * rowSpacing}
-          width={3}
-          height={5}
-        />
-      );
+
+  SKYLINE_BUILDINGS.forEach((b, bi) => {
+    const roofY = SKYLINE_BASELINE - b.h;
+    const usableWidth = b.w - marginX * 2;
+    const usableHeight = b.h - marginTop - marginBottom;
+    if (usableWidth <= 0 || usableHeight <= 0) return;
+
+    const cols = Math.max(1, Math.floor(usableWidth / colGap) + 1);
+    const rows = Math.max(1, Math.floor(usableHeight / rowGap) + 1);
+
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        // Leave a handful of windows dark for a natural, not-fully-lit look.
+        if ((col + row * 2 + bi) % 5 === 0) continue;
+        windows.push(
+          <rect
+            key={`w-${bi}-${row}-${col}`}
+            x={b.x + marginX + col * colGap}
+            y={roofY + marginTop + row * rowGap}
+            width={winW}
+            height={winH}
+          />
+        );
+      }
     }
-  }
+  });
+
   return windows;
 }
 
