@@ -52,12 +52,64 @@ export default function Page() {
   const [status, setStatus] = useState("idle"); // idle | submitting | success
   const [serverError, setServerError] = useState("");
   const [particles, setParticles] = useState([]);
+  const [ripples, setRipples] = useState([]);
   const loaded = useRef(false);
+  const cursorGlowRef = useRef(null);
 
   // Particles are randomized client-side only, to avoid server/client mismatch.
   useEffect(() => {
     setParticles(makeParticles());
   }, []);
+
+  // Soft glow that trails the cursor, desktop only (mouse + hover capable).
+  useEffect(() => {
+    const isDesktop = window.matchMedia(
+      "(hover: hover) and (pointer: fine)"
+    ).matches;
+    if (!isDesktop) return;
+
+    const glow = cursorGlowRef.current;
+    if (!glow) return;
+
+    let targetX = window.innerWidth / 2;
+    let targetY = window.innerHeight / 2;
+    let currentX = targetX;
+    let currentY = targetY;
+    let rafId;
+
+    function handleMove(e) {
+      targetX = e.clientX;
+      targetY = e.clientY;
+    }
+
+    function tick() {
+      currentX += (targetX - currentX) * 0.12;
+      currentY += (targetY - currentY) * 0.12;
+      glow.style.transform = `translate(${currentX}px, ${currentY}px)`;
+      rafId = requestAnimationFrame(tick);
+    }
+
+    window.addEventListener("mousemove", handleMove);
+    rafId = requestAnimationFrame(tick);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMove);
+      cancelAnimationFrame(rafId);
+    };
+  }, []);
+
+  // Spawns a short-lived ripple span at the click point on the submit button.
+  function spawnRipple(e) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height) * 1.8;
+    const x = e.clientX - rect.left - size / 2;
+    const y = e.clientY - rect.top - size / 2;
+    const id = `${Date.now()}-${Math.random()}`;
+    setRipples((r) => [...r, { id, x, y, size }]);
+    setTimeout(() => {
+      setRipples((r) => r.filter((rp) => rp.id !== id));
+    }, 650);
+  }
 
   // Load any saved draft from this device on first render.
   useEffect(() => {
@@ -138,6 +190,7 @@ export default function Page() {
     return (
       <>
         <ParticleField particles={particles} />
+        <div className="cursor-glow" ref={cursorGlowRef} aria-hidden="true" />
         <main className="page">
         <div className="success">
           <div className="success-badge">
@@ -166,6 +219,7 @@ export default function Page() {
   return (
     <>
       <ParticleField particles={particles} />
+      <div className="cursor-glow" ref={cursorGlowRef} aria-hidden="true" />
       <main className="page">
       <header className="header">
         <div className="badge">
@@ -302,9 +356,24 @@ export default function Page() {
         <button
           className="submit"
           type="button"
-          onClick={handleSubmit}
+          onClick={(e) => {
+            spawnRipple(e);
+            handleSubmit();
+          }}
           disabled={status === "submitting"}
         >
+          {ripples.map((r) => (
+            <span
+              key={r.id}
+              className="ripple"
+              style={{
+                left: `${r.x}px`,
+                top: `${r.y}px`,
+                width: `${r.size}px`,
+                height: `${r.size}px`,
+              }}
+            />
+          ))}
           {status === "submitting" ? "Sending…" : "Submit application"}
         </button>
         <p className="disclaimer">
