@@ -49,7 +49,7 @@ body::before {
   pointer-events: none;
   background:
     /* dark overlay */
-    rgba(9, 9, 11, 0.75),
+    rgba(9, 9, 11, 0.45),
     /* vignette edges */
     radial-gradient(130% 140% at 50% 50%, transparent 45%, rgba(0, 0, 0, 0.6));
 }
