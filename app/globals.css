@@ -91,11 +91,11 @@ body::before {
 }
 
 .skyline-buildings {
-  fill: rgba(244, 244, 245, 0.055);
+  fill: rgba(244, 244, 245, 0.07);
 }
 
 .skyline-windows {
-  fill: rgba(244, 244, 245, 0.15);
+  fill: rgba(244, 244, 245, 0.2);
 }
 
 .particle {
