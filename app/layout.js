@@ -1,10 +1,10 @@
-import { Cormorant_Garamond, Inter } from "next/font/google";
+import { Space_Grotesk, Inter } from "next/font/google";
 import { SERVER_NAME } from "./questions";
 import "./globals.css";
 
-const display = Cormorant_Garamond({
+const display = Space_Grotesk({
   subsets: ["latin"],
-  weight: ["500", "600"],
+  weight: ["600", "700"],
   variable: "--font-display",
   display: "swap",
 });
