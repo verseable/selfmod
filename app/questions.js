@@ -16,6 +16,7 @@ export const EXPECTATIONS = [
   "Be willing to learn, and stay active in the server",
   "Answer every question honestly, and in complete sentences",
   "No AI-generated, copied, or auto-generated answers",
+  "Troll apps will not be considered, and may limit you from applying again in the future",
 ];
 
 export const REQUIREMENTS = [
