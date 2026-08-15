@@ -34,9 +34,10 @@ body {
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
   background-image: url('https://i.imgur.com/zGz8WUT.jpeg');
-  background-size: cover;
+  background-size: 120%;
   background-position: center;
   background-attachment: fixed;
+  background-repeat: no-repeat;
 }
 
 /* Dark overlay + vignette for readability */
