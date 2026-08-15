@@ -141,22 +141,22 @@ function skylineShapes(keyPrefix) {
   });
 }
 
-// Sparse grid of tiny window rects, clipped down to just the building
-// shapes above so only windows "inside" a building are ever visible.
+// Grid of tiny window rects, clipped down to just the building shapes
+// above so only windows "inside" a building are ever visible.
 function skylineWindows() {
-  const cols = 21;
-  const rows = 9;
+  const cols = 28;
+  const rows = 14;
   const colSpacing = 1440 / cols;
-  const rowSpacing = 210 / rows;
+  const rowSpacing = 220 / rows;
   const windows = [];
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
-      if ((col + row) % 2 !== 0) continue; // thin it out, not every cell lit
+      if ((col * 2 + row * 3) % 5 === 0) continue; // a few dark windows, not every cell lit
       windows.push(
         <rect
           key={`w-${row}-${col}`}
-          x={col * colSpacing + 8}
-          y={16 + row * rowSpacing}
+          x={col * colSpacing + 6}
+          y={12 + row * rowSpacing}
           width={3}
           height={5}
         />
