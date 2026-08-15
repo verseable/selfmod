@@ -35,7 +35,7 @@ body {
   min-height: 100vh;
 }
 
-/* Ambient light haze at top + vignette at the edges, like the photos */
+/* Cityscape background with lights */
 body::before {
   content: "";
   position: fixed;
@@ -43,12 +43,52 @@ body::before {
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(
-      900px 460px at 50% -240px,
-      rgba(255, 255, 255, 0.07),
-      transparent 72%
-    ),
-    radial-gradient(130% 120% at 50% 34%, transparent 56%, rgba(0, 0, 0, 0.6));
+    /* city silhouette - tall buildings */
+    linear-gradient(90deg, transparent 2%, #0a0a0c 4%, transparent 8%, #0b0b0d 10%, transparent 15%, #0a0a0c 17%, transparent 22%, #0c0c0e 24%, transparent 30%, #0b0b0d 32%, transparent 38%, #0d0d0f 40%, transparent 45%, #0c0c0e 47%, transparent 52%, #0b0b0d 54%, transparent 60%, #0a0a0c 62%, transparent 68%, #0d0d0f 70%, transparent 76%, #0b0b0d 78%, transparent 84%, #0c0c0e 86%, transparent 92%, #0a0a0c 94%, transparent 98%),
+    /* light haze top + vignette */
+    radial-gradient(900px 420px at 50% -200px, rgba(255, 255, 255, 0.06), transparent 70%),
+    radial-gradient(130% 140% at 50% 40%, transparent 48%, rgba(0, 0, 0, 0.65));
+  background-size: 100% 45%, 100% 100%, 100% 100%;
+  background-position: 0 60%, 0 0, 0 0;
+  background-repeat: no-repeat;
+}
+
+/* Scattered window lights */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(1.5px 1.5px at 8% 68%, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(1px 1px at 12% 72%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1.2px 1.2px at 14% 65%, rgba(255, 255, 255, 0.7), transparent),
+    radial-gradient(1.5px 1.5px at 18% 70%, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(1px 1px at 21% 75%, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(1.2px 1.2px at 25% 68%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 28% 72%, rgba(255, 255, 255, 0.7), transparent),
+    radial-gradient(1px 1px at 32% 70%, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(1.2px 1.2px at 35% 74%, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(1.5px 1.5px at 39% 69%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1px 1px at 42% 73%, rgba(255, 255, 255, 0.7), transparent),
+    radial-gradient(1.2px 1.2px at 46% 71%, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(1.5px 1.5px at 49% 75%, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(1px 1px at 53% 70%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1.2px 1.2px at 56% 74%, rgba(255, 255, 255, 0.7), transparent),
+    radial-gradient(1.5px 1.5px at 60% 68%, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(1px 1px at 63% 72%, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(1.2px 1.2px at 67% 70%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 70% 75%, rgba(255, 255, 255, 0.7), transparent),
+    radial-gradient(1px 1px at 74% 69%, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(1.2px 1.2px at 77% 73%, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(1.5px 1.5px at 81% 71%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1px 1px at 84% 75%, rgba(255, 255, 255, 0.7), transparent),
+    radial-gradient(1.2px 1.2px at 88% 70%, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(1.5px 1.5px at 91% 74%, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(1px 1px at 95% 72%, rgba(255, 255, 255, 0.5), transparent);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
 }
 
 .page {
@@ -96,11 +136,11 @@ body::before {
 }
 
 .header h1 {
-  font-family: var(--font-display), serif;
-  font-weight: 600;
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700;
   font-size: clamp(32px, 7vw, 48px);
-  line-height: 1.04;
-  letter-spacing: 0.01em;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
   margin: 0 0 14px;
 }
 
@@ -144,10 +184,10 @@ body::before {
 }
 
 .notice-title {
-  font-family: var(--font-display), serif;
-  font-weight: 600;
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700;
   font-size: 21px;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
   margin: 0;
 }
 
@@ -417,10 +457,10 @@ button.submit:disabled {
 }
 
 .success h1 {
-  font-family: var(--font-display), serif;
-  font-weight: 600;
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700;
   font-size: 34px;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.02em;
   margin: 0 0 12px;
 }
 
