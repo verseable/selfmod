@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   QUESTIONS,
   SERVER_NAME,
@@ -8,11 +8,73 @@ import {
   REQUIREMENTS,
 } from "./questions";
 
+const STORAGE_KEY = "selfmod-application-draft";
+
+// Generates a fresh random batch of floating particles (10-12 of them).
+function makeParticles() {
+  const count = 10 + Math.floor(Math.random() * 3); // 10, 11, or 12
+  return Array.from({ length: count }, (_, i) => ({
+    id: `${Date.now()}-${i}-${Math.random()}`,
+    left: Math.random() * 100, // % across the screen
+    size: 10 + Math.random() * 14, // 10-24px
+    duration: 5 + Math.random() * 6, // 5-11s to cross the screen
+    delay: -(Math.random() * 11), // negative delay so they start mid-flight, staggered
+    drift: Math.round((Math.random() - 0.5) * 90), // -45px to 45px horizontal drift
+    opacity: 0.65 + Math.random() * 0.35, // 0.65-1
+  }));
+}
+
+function ParticleField({ particles }) {
+  return (
+    <div className="particles" aria-hidden="true">
+      {particles.map((p) => (
+        <span
+          key={p.id}
+          className="particle"
+          style={{
+            left: `${p.left}%`,
+            width: `${p.size}px`,
+            height: `${p.size}px`,
+            animationDuration: `${p.duration}s`,
+            animationDelay: `${p.delay}s`,
+            "--drift": `${p.drift}px`,
+            "--peak-opacity": p.opacity,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 export default function Page() {
   const [values, setValues] = useState({});
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("idle"); // idle | submitting | success
   const [serverError, setServerError] = useState("");
+  const [particles, setParticles] = useState([]);
+  const loaded = useRef(false);
+
+  // Particles are randomized client-side only, to avoid server/client mismatch.
+  useEffect(() => {
+    setParticles(makeParticles());
+  }, []);
+
+  // Load any saved draft from this device on first render.
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) setValues(JSON.parse(saved));
+    } catch {}
+    loaded.current = true;
+  }, []);
+
+  // Save the draft whenever answers change (after the initial load).
+  useEffect(() => {
+    if (!loaded.current) return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(values));
+    } catch {}
+  }, [values]);
 
   function update(name, val) {
     setValues((v) => ({ ...v, [name]: val }));
@@ -58,6 +120,10 @@ export default function Page() {
         return;
       }
 
+      // Application sent, so clear the saved draft.
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch {}
       setStatus("success");
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
@@ -70,7 +136,9 @@ export default function Page() {
 
   if (status === "success") {
     return (
-      <main className="page">
+      <>
+        <ParticleField particles={particles} />
+        <main className="page">
         <div className="success">
           <div className="success-badge">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -90,12 +158,15 @@ export default function Page() {
             You can now close this page.
           </p>
         </div>
-      </main>
+        </main>
+      </>
     );
   }
 
   return (
-    <main className="page">
+    <>
+      <ParticleField particles={particles} />
+      <main className="page">
       <header className="header">
         <div className="badge">
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -218,6 +289,16 @@ export default function Page() {
 
       <div className="submit-row">
         {serverError && <div className="server-error">{serverError}</div>}
+        <p
+          style={{
+            textAlign: "center",
+            color: "#6b7080",
+            fontSize: 12,
+            margin: "0 0 14px",
+          }}
+        >
+          Your progress saves automatically on this device.
+        </p>
         <button
           className="submit"
           type="button"
@@ -227,10 +308,11 @@ export default function Page() {
           {status === "submitting" ? "Sending…" : "Submit application"}
         </button>
         <p className="disclaimer">
-          Your answers are sent privately to the {SERVER_NAME} admins.
+          Your answers are sent privately to the {SERVER_NAME} moderators.
         </p>
       </div>
-    </main>
+      </main>
+    </>
   );
 }
 
