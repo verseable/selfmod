@@ -141,9 +141,30 @@ function skylineShapes(keyPrefix) {
   });
 }
 
-// A window grid generated per-building, sized to that building's own
-// width/height, so every building gets even columns and rows instead of
-// relying on a generic overlay grid that may barely clip into it.
+// The clean rectangular area of each building that's safe for a window
+// grid - i.e. excluding the narrower "step" cap and the sloped "spire"
+// peak, since rectangular windows placed there just get raggedly clipped.
+function windowSafeArea(b) {
+  const roofY = SKYLINE_BASELINE - b.h;
+
+  if (b.type === "step") {
+    const topH = b.h * 0.26;
+    const baseH = b.h - topH;
+    return { x: b.x, y: SKYLINE_BASELINE - baseH, w: b.w, h: baseH };
+  }
+
+  if (b.type === "spire") {
+    const baseH = b.h * 0.74;
+    return { x: b.x, y: SKYLINE_BASELINE - baseH, w: b.w, h: baseH };
+  }
+
+  // flat & antenna: the full box is a clean rectangle already.
+  return { x: b.x, y: roofY, w: b.w, h: b.h };
+}
+
+// A window grid generated per-building, using each building's clean
+// rectangular safe area, so columns and rows land evenly instead of
+// getting cut off by a stepped cap or a sloped roofline.
 function skylineWindows() {
   const marginX = 6;
   const marginTop = 10;
@@ -156,9 +177,9 @@ function skylineWindows() {
   const windows = [];
 
   SKYLINE_BUILDINGS.forEach((b, bi) => {
-    const roofY = SKYLINE_BASELINE - b.h;
-    const usableWidth = b.w - marginX * 2;
-    const usableHeight = b.h - marginTop - marginBottom;
+    const area = windowSafeArea(b);
+    const usableWidth = area.w - marginX * 2;
+    const usableHeight = area.h - marginTop - marginBottom;
     if (usableWidth <= 0 || usableHeight <= 0) return;
 
     const cols = Math.max(1, Math.floor(usableWidth / colGap) + 1);
@@ -171,8 +192,8 @@ function skylineWindows() {
         windows.push(
           <rect
             key={`w-${bi}-${row}-${col}`}
-            x={b.x + marginX + col * colGap}
-            y={roofY + marginTop + row * rowGap}
+            x={area.x + marginX + col * colGap}
+            y={area.y + marginTop + row * rowGap}
             width={winW}
             height={winH}
           />
