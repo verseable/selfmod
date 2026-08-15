@@ -86,8 +86,8 @@ export default function Page() {
           <h1>Application sent</h1>
           <p>
             Thanks for applying to the {SERVER_NAME} staff team. The
-            moderators have your answers and will reach out on Discord if
-            they'd like to talk further. You can close this page.
+            admins have your responses and will let you know if you've made it! 
+            You can now close this page.
           </p>
         </div>
       </main>
