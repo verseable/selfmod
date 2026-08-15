@@ -79,7 +79,7 @@ export async function POST(req) {
   const embed = {
     title: "New moderator application",
     description,
-    color: 0x5865f2,
+    color: 0xf4f4f5,
     fields: fields.slice(0, 25),
     timestamp: new Date().toISOString(),
     footer: { text: footerText },
