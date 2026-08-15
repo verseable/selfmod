@@ -227,7 +227,7 @@ export default function Page() {
           {status === "submitting" ? "Sending…" : "Submit application"}
         </button>
         <p className="disclaimer">
-          Your answers are sent privately to the {SERVER_NAME} moderators.
+          Your answers are sent privately to the {SERVER_NAME} admins.
         </p>
       </div>
     </main>
