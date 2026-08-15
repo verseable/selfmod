@@ -94,6 +94,10 @@ body::before {
   fill: rgba(244, 244, 245, 0.055);
 }
 
+.skyline-windows {
+  fill: rgba(244, 244, 245, 0.15);
+}
+
 .particle {
   position: absolute;
   bottom: -40px;
