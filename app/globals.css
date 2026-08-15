@@ -60,6 +60,42 @@ body::before {
   background: radial-gradient(900px 400px at 50% -200px, rgba(255, 255, 255, 0.04), transparent 70%);
 }
 
+/* Floating particles - all screen sizes */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(2px 2px at 15% 20%, rgba(244, 244, 245, 0.4), transparent),
+    radial-gradient(3px 3px at 85% 30%, rgba(244, 244, 245, 0.3), transparent),
+    radial-gradient(2.5px 2.5px at 25% 60%, rgba(244, 244, 245, 0.35), transparent),
+    radial-gradient(2px 2px at 75% 75%, rgba(244, 244, 245, 0.4), transparent),
+    radial-gradient(3px 3px at 40% 85%, rgba(244, 244, 245, 0.3), transparent),
+    radial-gradient(2.5px 2.5px at 90% 50%, rgba(244, 244, 245, 0.35), transparent),
+    radial-gradient(2px 2px at 10% 45%, rgba(244, 244, 245, 0.3), transparent),
+    radial-gradient(2.5px 2.5px at 60% 15%, rgba(244, 244, 245, 0.4), transparent);
+  background-size: 200% 200%;
+  background-repeat: no-repeat;
+  animation: particleFloat 20s ease-in-out infinite;
+}
+
+@keyframes particleFloat {
+  0% {
+    background-position: 0% 0%, 100% 0%, 0% 100%, 100% 100%, 50% 50%, 0% 50%, 100% 50%, 50% 0%;
+    opacity: 0.3;
+  }
+  50% {
+    background-position: 5% 8%, 95% -5%, -3% 95%, 103% 105%, 55% 45%, 8% 55%, 95% 45%, 48% 5%;
+    opacity: 0.6;
+  }
+  100% {
+    background-position: 0% 0%, 100% 0%, 0% 100%, 100% 100%, 50% 50%, 0% 50%, 100% 50%, 50% 0%;
+    opacity: 0.3;
+  }
+}
+
 .page {
   position: relative;
   z-index: 1;
