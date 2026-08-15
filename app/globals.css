@@ -33,25 +33,31 @@ body {
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
-  background-image: url('https://i.ibb.co/dwWyYnX7/LOw-FIE.jpg');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
+  background: linear-gradient(-45deg, #0a0a0c, #09090b, #0d0d0f, #0b0b0d);
+  background-size: 400% 400%;
+  animation: gradientShift 12s ease infinite;
 }
 
-/* Dark overlay + vignette for readability */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Subtle top glow */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background:
-    /* dark overlay */
-    rgba(9, 9, 11, 0.45),
-    /* vignette edges */
-    radial-gradient(130% 140% at 50% 50%, transparent 45%, rgba(0, 0, 0, 0.6));
+  background: radial-gradient(900px 400px at 50% -200px, rgba(255, 255, 255, 0.04), transparent 70%);
 }
 
 .page {
