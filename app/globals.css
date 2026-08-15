@@ -235,6 +235,9 @@ body::after {
   line-height: 1.08;
   letter-spacing: -0.02em;
   margin: 0 0 14px;
+  text-shadow:
+    0 0 20px rgba(244, 244, 245, 0.35),
+    0 0 46px rgba(244, 244, 245, 0.18);
 }
 
 .header p {
@@ -555,6 +558,9 @@ button.submit:disabled {
   font-size: 34px;
   letter-spacing: -0.02em;
   margin: 0 0 12px;
+  text-shadow:
+    0 0 20px rgba(244, 244, 245, 0.35),
+    0 0 46px rgba(244, 244, 245, 0.18);
 }
 
 .success p {
