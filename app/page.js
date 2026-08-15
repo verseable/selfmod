@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, forwardRef } from "react";
+import { useState, useEffect, useRef, forwardRef, Fragment } from "react";
 import {
   QUESTIONS,
   SERVER_NAME,
@@ -51,8 +51,121 @@ const ParticleField = forwardRef(function ParticleField(
   );
 });
 
-// Static, low-opacity skyline silhouette anchored to the bottom of the
-// screen. Purely decorative, drawn as flat vector rectangles.
+// Static, low-opacity skyline anchored to the bottom of the screen.
+// Each building has a "roof style" (flat, stepped setback, spire, antenna
+// mast) so the silhouette reads as an actual city, not a bar chart. A
+// sparse grid of tiny "window" rects is clipped to the building shapes
+// on top, for a lit-windows-at-night feel.
+const SKYLINE_BASELINE = 240;
+
+const SKYLINE_BUILDINGS = [
+  { x: 0, w: 58, h: 110, type: "flat" },
+  { x: 60, w: 42, h: 170, type: "antenna" },
+  { x: 104, w: 66, h: 85, type: "flat" },
+  { x: 172, w: 48, h: 200, type: "step" },
+  { x: 222, w: 50, h: 130, type: "flat" },
+  { x: 274, w: 38, h: 95, type: "flat" },
+  { x: 314, w: 60, h: 190, type: "spire" },
+  { x: 376, w: 44, h: 120, type: "flat" },
+  { x: 422, w: 54, h: 160, type: "step" },
+  { x: 478, w: 40, h: 90, type: "flat" },
+  { x: 520, w: 68, h: 210, type: "antenna" },
+  { x: 590, w: 46, h: 100, type: "flat" },
+  { x: 638, w: 56, h: 150, type: "flat" },
+  { x: 696, w: 42, h: 85, type: "flat" },
+  { x: 740, w: 64, h: 180, type: "step" },
+  { x: 806, w: 48, h: 125, type: "flat" },
+  { x: 856, w: 38, h: 140, type: "flat" },
+  { x: 896, w: 60, h: 200, type: "spire" },
+  { x: 958, w: 44, h: 95, type: "flat" },
+  { x: 1004, w: 54, h: 165, type: "flat" },
+  { x: 1060, w: 40, h: 115, type: "flat" },
+  { x: 1102, w: 66, h: 190, type: "step" },
+  { x: 1170, w: 46, h: 105, type: "flat" },
+  { x: 1218, w: 56, h: 145, type: "antenna" },
+  { x: 1276, w: 42, h: 90, type: "flat" },
+  { x: 1320, w: 62, h: 175, type: "flat" },
+  { x: 1384, w: 56, h: 100, type: "flat" },
+];
+
+// Renders each building's shape. Uses Fragments (not <g>) so the same
+// output works both for normal display and as direct children of a
+// <clipPath>, which requires flat shape elements.
+function skylineShapes(keyPrefix) {
+  return SKYLINE_BUILDINGS.map((b, i) => {
+    const key = `${keyPrefix}${i}`;
+    const roofY = SKYLINE_BASELINE - b.h;
+
+    if (b.type === "step") {
+      const topH = b.h * 0.26;
+      const topW = b.w * 0.52;
+      const topX = b.x + (b.w - topW) / 2;
+      const baseH = b.h - topH;
+      const baseY = SKYLINE_BASELINE - baseH;
+      return (
+        <Fragment key={key}>
+          <rect x={b.x} y={baseY} width={b.w} height={baseH} />
+          <rect x={topX} y={roofY} width={topW} height={topH} />
+        </Fragment>
+      );
+    }
+
+    if (b.type === "spire") {
+      const baseH = b.h * 0.74;
+      const baseY = SKYLINE_BASELINE - baseH;
+      return (
+        <Fragment key={key}>
+          <rect x={b.x} y={baseY} width={b.w} height={baseH} />
+          <polygon
+            points={`${b.x},${baseY} ${b.x + b.w},${baseY} ${
+              b.x + b.w / 2
+            },${roofY}`}
+          />
+        </Fragment>
+      );
+    }
+
+    if (b.type === "antenna") {
+      return (
+        <Fragment key={key}>
+          <rect x={b.x} y={roofY} width={b.w} height={b.h} />
+          <rect x={b.x + b.w / 2 - 1.5} y={roofY - 34} width={3} height={34} />
+        </Fragment>
+      );
+    }
+
+    // flat
+    return (
+      <rect key={key} x={b.x} y={roofY} width={b.w} height={b.h} />
+    );
+  });
+}
+
+// Sparse grid of tiny window rects, clipped down to just the building
+// shapes above so only windows "inside" a building are ever visible.
+function skylineWindows() {
+  const cols = 21;
+  const rows = 9;
+  const colSpacing = 1440 / cols;
+  const rowSpacing = 210 / rows;
+  const windows = [];
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      if ((col + row) % 2 !== 0) continue; // thin it out, not every cell lit
+      windows.push(
+        <rect
+          key={`w-${row}-${col}`}
+          x={col * colSpacing + 8}
+          y={16 + row * rowSpacing}
+          width={3}
+          height={5}
+        />
+      );
+    }
+  }
+  return windows;
+}
+
 function SkylineBackdrop() {
   return (
     <svg
@@ -61,31 +174,12 @@ function SkylineBackdrop() {
       preserveAspectRatio="none"
       aria-hidden="true"
     >
-      <g className="skyline-buildings">
-        <rect x="0" y="120" width="60" height="120" />
-        <rect x="65" y="60" width="45" height="180" />
-        <rect x="115" y="150" width="70" height="90" />
-        <rect x="190" y="30" width="50" height="210" />
-        <rect x="245" y="100" width="55" height="140" />
-        <rect x="305" y="140" width="40" height="100" />
-        <rect x="350" y="40" width="65" height="200" />
-        <rect x="420" y="110" width="48" height="130" />
-        <rect x="473" y="70" width="58" height="170" />
-        <rect x="536" y="145" width="42" height="95" />
-        <rect x="583" y="20" width="72" height="220" />
-        <rect x="660" y="130" width="50" height="110" />
-        <rect x="715" y="80" width="60" height="160" />
-        <rect x="780" y="150" width="45" height="90" />
-        <rect x="830" y="50" width="68" height="190" />
-        <rect x="903" y="110" width="52" height="130" />
-        <rect x="960" y="90" width="40" height="150" />
-        <rect x="1005" y="30" width="64" height="210" />
-        <rect x="1074" y="140" width="48" height="100" />
-        <rect x="1127" y="65" width="58" height="175" />
-        <rect x="1190" y="120" width="44" height="120" />
-        <rect x="1239" y="40" width="70" height="200" />
-        <rect x="1314" y="100" width="50" height="140" />
-        <rect x="1369" y="145" width="71" height="95" />
+      <defs>
+        <clipPath id="skylineClip">{skylineShapes("clip-")}</clipPath>
+      </defs>
+      <g className="skyline-buildings">{skylineShapes("b-")}</g>
+      <g className="skyline-windows" clipPath="url(#skylineClip)">
+        {skylineWindows()}
       </g>
     </svg>
   );
