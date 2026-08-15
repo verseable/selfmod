@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, forwardRef } from "react";
 import {
   QUESTIONS,
   SERVER_NAME,
@@ -24,9 +24,14 @@ function makeParticles() {
   }));
 }
 
-function ParticleField({ particles }) {
+// forwardRef so the page can drive scroll-linked parallax and the
+// ambient brightness pulse directly on this layer.
+const ParticleField = forwardRef(function ParticleField(
+  { particles },
+  ref
+) {
   return (
-    <div className="particles" aria-hidden="true">
+    <div className="particles" ref={ref} aria-hidden="true">
       {particles.map((p) => (
         <span
           key={p.id}
@@ -44,6 +49,46 @@ function ParticleField({ particles }) {
       ))}
     </div>
   );
+});
+
+// Static, low-opacity skyline silhouette anchored to the bottom of the
+// screen. Purely decorative, drawn as flat vector rectangles.
+function SkylineBackdrop() {
+  return (
+    <svg
+      className="skyline"
+      viewBox="0 0 1440 240"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <g className="skyline-buildings">
+        <rect x="0" y="120" width="60" height="120" />
+        <rect x="65" y="60" width="45" height="180" />
+        <rect x="115" y="150" width="70" height="90" />
+        <rect x="190" y="30" width="50" height="210" />
+        <rect x="245" y="100" width="55" height="140" />
+        <rect x="305" y="140" width="40" height="100" />
+        <rect x="350" y="40" width="65" height="200" />
+        <rect x="420" y="110" width="48" height="130" />
+        <rect x="473" y="70" width="58" height="170" />
+        <rect x="536" y="145" width="42" height="95" />
+        <rect x="583" y="20" width="72" height="220" />
+        <rect x="660" y="130" width="50" height="110" />
+        <rect x="715" y="80" width="60" height="160" />
+        <rect x="780" y="150" width="45" height="90" />
+        <rect x="830" y="50" width="68" height="190" />
+        <rect x="903" y="110" width="52" height="130" />
+        <rect x="960" y="90" width="40" height="150" />
+        <rect x="1005" y="30" width="64" height="210" />
+        <rect x="1074" y="140" width="48" height="100" />
+        <rect x="1127" y="65" width="58" height="175" />
+        <rect x="1190" y="120" width="44" height="120" />
+        <rect x="1239" y="40" width="70" height="200" />
+        <rect x="1314" y="100" width="50" height="140" />
+        <rect x="1369" y="145" width="71" height="95" />
+      </g>
+    </svg>
+  );
 }
 
 export default function Page() {
@@ -55,6 +100,7 @@ export default function Page() {
   const [ripples, setRipples] = useState([]);
   const loaded = useRef(false);
   const cursorGlowRef = useRef(null);
+  const particlesRef = useRef(null);
 
   // Particles are randomized client-side only, to avoid server/client mismatch.
   useEffect(() => {
@@ -95,6 +141,43 @@ export default function Page() {
     return () => {
       window.removeEventListener("mousemove", handleMove);
       cancelAnimationFrame(rafId);
+    };
+  }, []);
+
+  // Scroll-linked parallax on the particle layer (drifts at a fraction of
+  // scroll speed) plus a brief brightness pulse while actively scrolling.
+  // Reads particlesRef.current fresh each time, since the ref target swaps
+  // between the form view and the success view.
+  useEffect(() => {
+    let ticking = false;
+    let pulseTimeout;
+
+    function onScroll() {
+      const layer = particlesRef.current;
+      if (!layer) return;
+
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(() => {
+          if (particlesRef.current) {
+            const offset = window.scrollY * 0.06;
+            particlesRef.current.style.transform = `translateY(${offset}px)`;
+          }
+          ticking = false;
+        });
+      }
+
+      layer.classList.add("scroll-pulse");
+      clearTimeout(pulseTimeout);
+      pulseTimeout = setTimeout(() => {
+        particlesRef.current?.classList.remove("scroll-pulse");
+      }, 350);
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      clearTimeout(pulseTimeout);
     };
   }, []);
 
@@ -189,7 +272,8 @@ export default function Page() {
   if (status === "success") {
     return (
       <>
-        <ParticleField particles={particles} />
+        <SkylineBackdrop />
+        <ParticleField particles={particles} ref={particlesRef} />
         <div className="cursor-glow" ref={cursorGlowRef} aria-hidden="true" />
         <main className="page">
         <div className="success">
@@ -218,7 +302,8 @@ export default function Page() {
 
   return (
     <>
-      <ParticleField particles={particles} />
+      <SkylineBackdrop />
+      <ParticleField particles={particles} ref={particlesRef} />
       <div className="cursor-glow" ref={cursorGlowRef} aria-hidden="true" />
       <main className="page">
       <header className="header">
