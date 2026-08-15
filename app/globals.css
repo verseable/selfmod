@@ -174,6 +174,24 @@ body::before {
   padding: 64px 22px 96px;
 }
 
+/* Soft edge fade - blends particle glow back into the background before
+   it reaches the very top/bottom, instead of a hard cutoff. Painted after
+   .particles in the DOM, so it sits above them. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    var(--bg) 0%,
+    transparent 14%,
+    transparent 86%,
+    var(--bg) 100%
+  );
+}
+
 /* Header */
 .header {
   text-align: center;
