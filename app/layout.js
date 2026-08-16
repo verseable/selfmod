@@ -23,7 +23,7 @@ const baseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
     : "http://localhost:3000";
 
 const title = `Moderator Application for ${SERVER_NAME}`;
-const description = `Apply to join the ${SERVER_NAME} moderation team.`;
+const description = `apply to be a mod for /self!`;
 
 export const metadata = {
   metadataBase: new URL(baseUrl),
