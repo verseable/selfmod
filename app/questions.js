@@ -70,8 +70,7 @@ export const QUESTIONS = [
   {
     name: "experience",
     number: "05",
-    label: "Do you have past or current experience in moderating? If so please state the servers and what role you held.
-",
+    label: "Do you have past or current experience in moderating? If so please state the servers and what role you held.",
     type: "textarea",
     required: true,
     maxLength: 1000,
@@ -89,8 +88,7 @@ export const QUESTIONS = [
   {
     name: "scenarioSlurs",
     number: "07",
-    label: "If no moderators were online asides from yourself, and chat is getting active with people breaking rules what would you do?
-",
+    label: "If no moderators were online asides from yourself, and chat is getting active with people breaking rules what would you do?",
     type: "textarea",
     required: true,
     maxLength: 1000,
