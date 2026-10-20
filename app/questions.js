@@ -9,7 +9,7 @@
 //    answers side-by-side in the Discord message. Keep `maxLength` <= 1000.
 // ─────────────────────────────────────────────────────────────────────────
 
-export const SERVER_NAME = "/self";
+export const SERVER_NAME = "/likes";
 
 // The two read-only lists shown in the notice at the top of the form.
 export const EXPECTATIONS = [
