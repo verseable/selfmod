@@ -40,7 +40,7 @@ export const QUESTIONS = [
   {
     name: "level",
     number: "02",
-    label: "What level are you in /self?",
+    label: "What level are you in /likes?",
     type: "text",
     required: true,
     inline: true,
@@ -79,7 +79,7 @@ export const QUESTIONS = [
   {
     name: "motivation",
     number: "06",
-    label: "Why do you want to become a moderator in /self?",
+    label: "Why do you want to become a moderator in /likes?",
     type: "textarea",
     required: true,
     maxLength: 1000,
