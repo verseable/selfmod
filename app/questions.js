@@ -107,7 +107,7 @@ export const QUESTIONS = [
   {
     name: "tos",
     number: "09",
-    label: "Do you uphold all of Discord's Terms of Service?",
+    label: "Do you uphold all of Discord's ToS?",
     type: "text",
     required: true,
     inline: true,
