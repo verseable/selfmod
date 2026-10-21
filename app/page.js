@@ -8,7 +8,7 @@ import {
   REQUIREMENTS,
 } from "./questions";
 
-const STORAGE_KEY = "selfmod-application-draft";
+const STORAGE_KEY = "likesmod-application-draft";
 
 // Generates a fresh random batch of floating particles (10-12 of them).
 function makeParticles() {
